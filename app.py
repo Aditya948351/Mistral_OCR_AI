@@ -40,7 +40,9 @@ def process():
     image = Image.open(image_file)
 
     result = process_image(image)
+
     return jsonify(result)
+
 
 # Run Flask app
 if __name__ == "__main__":
