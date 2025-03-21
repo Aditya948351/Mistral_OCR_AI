@@ -1,15 +1,15 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify
 import pytesseract
 from PIL import Image
 import requests
 import io
-import base64
+import os
 
 app = Flask(__name__)
 
-# Hugging Face API Details
+# Hugging Face API Details (Do NOT expose API key publicly)
 API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3"
-HEADERS = {"Authorization": "Bearer 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"}
+HEADERS = {"Authorization": f"Bearer {os.getenv('HF_API_KEY')}"}
 
 # Function to process image with OCR and send extracted text to AI
 def process_image(image):
@@ -30,11 +30,6 @@ def process_image(image):
 
     return {"extracted_text": extracted_text, "ai_response": ai_response}
 
-# Flask Route for Home Page
-@app.route("/")
-def home():
-    return render_template("index.html")
-
 # Flask Route to Handle Image Upload
 @app.route("/process", methods=["POST"])
 def process():
@@ -47,6 +42,6 @@ def process():
     result = process_image(image)
     return jsonify(result)
 
-# Run the Flask app
+# Run Flask app
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
